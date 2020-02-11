@@ -2,7 +2,10 @@ class RecipesController < ApplicationController
 
     def index
         @recipes = Recipe.all 
-        render json: @recipes 
+        @new_recipes = @recipes.map do |rec| 
+            {recipe: rec, ingredients: rec.ingredients}
+        end 
+        render json: @new_recipes 
     end
 
     def show 
