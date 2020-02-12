@@ -13,10 +13,10 @@ class UsersController < ApplicationController
         @my_recipes = owned_recipe_ids.map {|r_id| {recipe: Recipe.find(r_id), ingredients: Recipe.find(r_id).ingredients}  }
 
         favorite_user_recipes = @user.user_recipes.where(favorite: true)
-        favorite_recipe_ids = owned_user_recipes.map{|r| r.recipe.id}
+        favorite_recipe_ids = favorite_user_recipes.map{|r| r.recipe.id}
         @favorite_recipes = favorite_recipe_ids.map {|r_id| {recipe: Recipe.find(r_id), ingredients: Recipe.find(r_id).ingredients } }
 
-      
+       
 
         @userRecipes = {
             owned_recipes: @my_recipes,
