@@ -4,7 +4,7 @@ class LoginController < ApplicationController
         
         if user && user.password === params[:password]
              
-            render :json => user 
+            render :json => user
         else 
             render :json => {error: "User not found or password is incorrect"}
         end 
