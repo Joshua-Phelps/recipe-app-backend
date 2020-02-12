@@ -24,11 +24,13 @@ class RecipesController < ApplicationController
         @recipe.directions = params[:directions]
         @recipe.area = params[:area]
         @recipe.category = params[:category]
+        @recipe.rating = params[:rating]
         @user_recipe = UserRecipe.new 
         ing_array = [] 
         if @recipe.save
             @user_recipe.recipe = @recipe 
             @user_recipe.user = @user
+            @user_recipe.save
             params[:ingredients].each do |ing|
                 @ingredient = Ingredient.find_or_create_by(ing_name: ing[:ingName])
                 if @ingredient.save 
@@ -42,8 +44,18 @@ class RecipesController < ApplicationController
             end
             render json: {recipe: @recipe, ingredients: ing_array}
         end 
+    end
 
-
+    def update
+        @recipe = Recipe.find(params[:id])
+        @recipe.title = params[:title]
+        @recipe.img = params[:image]
+        @recipe.directions = params[:directions]
+        @recipe.area = params[:area]
+        @recipe.category = params[:category]
+        @recipe.rating = params[:rating]
+        @recipe.save 
+        render json: @recipe
     end
     
     # private 
