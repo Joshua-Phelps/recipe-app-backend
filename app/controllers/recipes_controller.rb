@@ -57,6 +57,11 @@ class RecipesController < ApplicationController
         @recipe.save 
         render json: @recipe
     end
+
+    def destroy
+        @recipe = Recipe.find(params[:id])
+        @recipe.destroy
+    end
     
     # private 
     # def recipe_params
