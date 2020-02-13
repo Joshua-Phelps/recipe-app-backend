@@ -17,7 +17,7 @@ class RecipesController < ApplicationController
         # byebug 
         ### need to add logic to add user to recipe 
         # @user = User.find(params[:user])
-        @user = User.find(1)
+        @user = User.find(params[:userId])
         @recipe = Recipe.new 
         @recipe.title = params[:title]
         @recipe.img = params[:image]
@@ -55,11 +55,15 @@ class RecipesController < ApplicationController
         @recipe.category = params[:category]
         @recipe.rating = params[:rating]
         @recipe.save 
-        render json: @recipe
+        render json: {recipe: @recipe, ingredients: @recipe.ingredients}
     end
 
     def destroy
         @recipe = Recipe.find(params[:id])
+        @recipe_ingredients = RecipeIngredient.where(recipe_id: @recipe)
+        @user_recipes = UserRecipe.where(recipe_id: @recipe)
+        @recipe_ingredients.destroy_all
+        @user_recipes.destroy_all
         @recipe.destroy
     end
     
