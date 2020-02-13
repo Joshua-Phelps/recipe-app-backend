@@ -2,9 +2,10 @@ class UserRecipesController < ApplicationController
 
     def create
         user_recipe = UserRecipe.find_by(user_id: params[:user_id], recipe_id: params[:recipe_id]) 
-        if user_recipe && user_recipe.favorite
-            render json: { message: 'Already in your favorites' }
-        elsif user_recipe && !user_recipe.favorite
+        if user_recipe && user_recipe.favorite 
+            user_recipe.destroy
+            render json: { error:"there was an error", destroyed: true, message: 'Already in your favorites' }
+        if user_recipe && !user_recipe.favorite
             render json: { error:"there was an error", message: 'You can not add your own recipe to favorites' }, status: 401
         else 
 
