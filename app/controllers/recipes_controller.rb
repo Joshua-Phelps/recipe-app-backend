@@ -55,7 +55,20 @@ class RecipesController < ApplicationController
             @recipe.area = params[:area]
             @recipe.category = params[:category]
             @recipe.rating = params[:rating]
-            @recipe.save 
+            @recipe_ings = RecipeIngredient.where(recipe_id: @recipe) 
+            @recipe_ings.destroy_all
+            params[:ingredients].each do |ing|
+                if ing[:ingName] != ''
+                    @ingredient = Ingredient.find_or_create_by(ing_name: ing[:ingName])
+                        if @ingredient.save 
+                        @recipe_ingredient = RecipeIngredient.new
+                        @recipe_ingredient.recipe = @recipe
+                        @recipe_ingredient.ingredient = @ingredient
+                        @recipe_ingredient.amount = ing[:amount]
+                        @recipe_ingredient.save
+                    end 
+                end 
+            end 
             render json: {recipe: @recipe, ingredients: @recipe.ingredients}
         else 
             @recipe.rating = params[:rating]
