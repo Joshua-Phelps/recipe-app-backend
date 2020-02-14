@@ -48,14 +48,20 @@ class RecipesController < ApplicationController
 
     def update
         @recipe = Recipe.find(params[:id])
-        @recipe.title = params[:title]
-        @recipe.img = params[:image]
-        @recipe.directions = params[:directions]
-        @recipe.area = params[:area]
-        @recipe.category = params[:category]
-        @recipe.rating = params[:rating]
-        @recipe.save 
-        render json: {recipe: @recipe, ingredients: @recipe.ingredients}
+        if params[:title] 
+            @recipe.title = params[:title]
+            @recipe.img = params[:image]
+            @recipe.directions = params[:directions]
+            @recipe.area = params[:area]
+            @recipe.category = params[:category]
+            @recipe.rating = params[:rating]
+            @recipe.save 
+            render json: {recipe: @recipe, ingredients: @recipe.ingredients}
+        else 
+            @recipe.rating = params[:rating]
+            @recipe.save 
+            render json: {recipe: @recipe, ingredients: @recipe.ingredients}
+        end 
     end
 
     def destroy

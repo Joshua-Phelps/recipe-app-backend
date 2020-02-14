@@ -27,4 +27,9 @@ class UsersController < ApplicationController
         render :json => @userRecipes
     end
 
+    def create
+        @user = User.create(username: params[:username], password: params[:password])
+       
+    end
+
 end
