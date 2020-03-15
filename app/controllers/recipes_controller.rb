@@ -1,44 +1,35 @@
 class RecipesController < ApplicationController
 
     def index
-        @recipes = Recipe.all 
-        @new_recipes = @recipes.map do |rec| 
-            {recipe: rec, ingredients: rec.ingredients}
-        end 
-        render json: @new_recipes 
+        # recipes = Recipe.all 
+        recipes = Recipe.all[0...9]
+        render json: recipes 
     end
 
     def show 
-        @recipe = Recipe.find(params[:id])
-        render json: @recipe
+        recipe = Recipe.find(params[:id])
+        render json: recipe
     end 
 
     def create
-        # byebug 
-        ### need to add logic to add user to recipe 
-        # @user = User.find(params[:user])
         @user = User.find(params[:userId])
-        @recipe = Recipe.new 
-        @recipe.title = params[:title]
-        @recipe.img = params[:image]
-        @recipe.directions = params[:directions]
-        @recipe.area = params[:area]
-        @recipe.category = params[:category]
-        @recipe.rating = params[:rating]
-        @user_recipe = UserRecipe.new 
+        @recipe = Recipe.new(
+            titel: params[:title], 
+            img: params[:image], 
+            directions: params[:directions], 
+            area: params[:area], 
+            category: params[:category], 
+            rating: params[:rating]
+        )
         ing_array = [] 
         if @recipe.save
-            @user_recipe.recipe = @recipe 
-            @user_recipe.user = @user
+            @user_recipe = UserRecipe.new(recipe_id: @recipe, user_id: @user)
             @user_recipe.save
             params[:ingredients].each do |ing|
                 @ingredient = Ingredient.find_or_create_by(ing_name: ing[:ingName])
                 if @ingredient.save 
                     ing_array.push(@ingredient)
-                @recipe_ingredient = RecipeIngredient.new
-                @recipe_ingredient.recipe = @recipe
-                @recipe_ingredient.ingredient = @ingredient
-                @recipe_ingredient.amount = ing[:amount]
+                @recipe_ingredient = RecipeIngredient.new(recipe_id: @recipe, ingredient_id: @ingredient, amount: ing[:amount] )
                 @recipe_ingredient.save 
                 end 
             end
@@ -68,7 +59,8 @@ class RecipesController < ApplicationController
                         @recipe_ingredient.save
                     end 
                 end 
-            end 
+            end
+            @recipe.save 
             render json: {recipe: @recipe, ingredients: @recipe.ingredients}
         else 
             @recipe.rating = params[:rating]

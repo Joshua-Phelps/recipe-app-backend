@@ -1,7 +1,12 @@
 class RecipeSerializer < ActiveModel::Serializer
-  attributes :id, :title, :img, :directions, :area, :category, :rating, :ingredients 
-  has_many :user_recipes
-  has_many :users, through: :user_recipes
-  has_many :recipe_ingredients
-  has_many :ingredients, through: :recipe_ingredients
+  attributes :id, :title, :img, :directions, :area, :category, :rating, :ingredients
+
+
+  def ingredients
+    ingredients = object.ingredients.map do |ing| 
+      amount = ing.recipe_ingredients.find_by(recipe_id: object.id)[:amount]
+      new_ing = {id: ing.id, ing_name: ing.ing_name, amount: amount}
+    end
+  end 
+
 end
