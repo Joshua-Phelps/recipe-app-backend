@@ -11,8 +11,9 @@ class UserRecipesController < ApplicationController
 
     def destroy
         user_recipe = UserRecipe.find_by(user_recipe_params)
+        id = user_recipe.recipe_id
         user_recipe.destroy
-        render json: { success: 'Recipe has been removed from your favorites' }
+        render json: id 
     end
 
     private 

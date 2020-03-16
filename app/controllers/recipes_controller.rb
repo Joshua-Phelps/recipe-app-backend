@@ -38,35 +38,57 @@ class RecipesController < ApplicationController
     end
 
     def update
-        @recipe = Recipe.find(params[:id])
+        byebug 
+        recipe = Recipe.find(params[:id])
         if params[:title] 
-            @recipe.title = params[:title]
-            @recipe.img = params[:image]
-            @recipe.directions = params[:directions]
-            @recipe.area = params[:area]
-            @recipe.category = params[:category]
-            @recipe.rating = params[:rating]
-            @recipe_ings = RecipeIngredient.where(recipe_id: @recipe) 
-            @recipe_ings.destroy_all
+            recipe.update(recipe_params)
+            recipe_ingredients = RecipeIngredient.where(recipe_id: @recipe) 
+            recipe_ingredients.destroy_all
             params[:ingredients].each do |ing|
                 if ing[:ingName] != ''
-                    @ingredient = Ingredient.find_or_create_by(ing_name: ing[:ingName])
-                        if @ingredient.save 
-                        @recipe_ingredient = RecipeIngredient.new
-                        @recipe_ingredient.recipe = @recipe
-                        @recipe_ingredient.ingredient = @ingredient
-                        @recipe_ingredient.amount = ing[:amount]
-                        @recipe_ingredient.save
+                    ingredient = Ingredient.find_or_create_by(ing_name: ing[:ing_name])
+                        if ingredient.save 
+                        recipe_ingredient = RecipeIngredient.new(recipe_id: recipe.id, ingredient_id: ing.id, amount: ing[:amount])
+                        recipe_ingredient.save
                     end 
                 end 
             end
-            @recipe.save 
-            render json: {recipe: @recipe, ingredients: @recipe.ingredients}
+            recipe.save 
+            render json: recipe
         else 
             @recipe.rating = params[:rating]
             @recipe.save 
-            render json: {recipe: @recipe, ingredients: @recipe.ingredients}
+            render json: recipe
         end 
+        # @recipe = Recipe.find(params[:id])
+        # if params[:title] 
+        #     @recipe.title = params[:title]
+        #     @recipe.img = params[:image]
+        #     @recipe.directions = params[:directions]
+        #     @recipe.area = params[:area]
+        #     @recipe.category = params[:category]
+        #     @recipe.rating = params[:rating]
+        #     @recipe_ings = RecipeIngredient.where(recipe_id: @recipe) 
+        #     @recipe_ings.destroy_all
+        #     params[:ingredients].each do |ing|
+        #         if ing[:ingName] != ''
+        #             @ingredient = Ingredient.find_or_create_by(ing_name: ing[:ingName])
+        #                 if @ingredient.save 
+        #                 @recipe_ingredient = RecipeIngredient.new
+        #                 @recipe_ingredient.recipe = @recipe
+        #                 @recipe_ingredient.ingredient = @ingredient
+        #                 @recipe_ingredient.amount = ing[:amount]
+        #                 @recipe_ingredient.save
+        #             end 
+        #         end 
+        #     end
+        #     @recipe.save 
+        #     render json: {recipe: @recipe, ingredients: @recipe.ingredients}
+        # else 
+        #     @recipe.rating = params[:rating]
+        #     @recipe.save 
+        #     render json: {recipe: @recipe, ingredients: @recipe.ingredients}
+        # end 
     end
 
     def destroy
@@ -78,10 +100,10 @@ class RecipesController < ApplicationController
         @recipe.destroy
     end
     
-    # private 
-    # def recipe_params
-    #     params.require(:recipe).permit(:title, :img, :directions, :area, :category, :rating)
-    # end
+    private 
+    def recipe_params
+        params.require(:recipe).permit(:title, :img, :directions, :area, :category, :rating, :id, ingredients: [])
+    end
 
 end
     
