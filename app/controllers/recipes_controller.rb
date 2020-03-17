@@ -1,11 +1,11 @@
 class RecipesController < ApplicationController
 
     def index 
-        recipes = Recipe.all
-        # last = Recipe.all.length 
-        # last_recipes = Recipe.all[(last-10)...last]
-        render json: recipes 
-        # render json: last_recipes
+        # recipes = Recipe.all
+        last = Recipe.all.length 
+        last_recipes = Recipe.all[(last-10)...last]
+        # render json: recipes 
+        render json: last_recipes
     end
 
     def show 
