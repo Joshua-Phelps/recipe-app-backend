@@ -1,9 +1,11 @@
 class RecipesController < ApplicationController
 
-    def index
-        # recipes = Recipe.all 
-        recipes = Recipe.all[0...9]
+    def index 
+        recipes = Recipe.all
+        # last = Recipe.all.length 
+        # last_recipes = Recipe.all[(last-10)...last]
         render json: recipes 
+        # render json: last_recipes
     end
 
     def show 
@@ -11,93 +13,61 @@ class RecipesController < ApplicationController
         render json: recipe
     end 
 
-    def create
-        @user = User.find(params[:userId])
-        @recipe = Recipe.new(
-            titel: params[:title], 
-            img: params[:image], 
-            directions: params[:directions], 
-            area: params[:area], 
-            category: params[:category], 
-            rating: params[:rating]
-        )
-        ing_array = [] 
-        if @recipe.save
-            @user_recipe = UserRecipe.new(recipe_id: @recipe, user_id: @user)
-            @user_recipe.save
-            params[:ingredients].each do |ing|
-                @ingredient = Ingredient.find_or_create_by(ing_name: ing[:ingName])
-                if @ingredient.save 
-                    ing_array.push(@ingredient)
-                @recipe_ingredient = RecipeIngredient.new(recipe_id: @recipe, ingredient_id: @ingredient, amount: ing[:amount] )
-                @recipe_ingredient.save 
-                end 
-            end
-            render json: {recipe: @recipe, ingredients: ing_array}
-        end 
-    end
-
-    def update
-        byebug 
-        recipe = Recipe.find(params[:id])
-        if params[:title] 
-            recipe.update(recipe_params)
-            recipe_ingredients = RecipeIngredient.where(recipe_id: @recipe) 
-            recipe_ingredients.destroy_all
-            params[:ingredients].each do |ing|
-                if ing[:ingName] != ''
+    def create 
+        user = User.find(params[:user_id])
+        recipe = Recipe.new(recipe_params)
+        if recipe.save
+            user_recipe = UserRecipe.new(recipe_id: recipe.id, user_id: user.id)
+            user_recipe.save
+            params[:recipe][:ingredients].each do |ing|
+             
+                if ing[:ing_name] != '' && ing[:ing_name] != nil 
                     ingredient = Ingredient.find_or_create_by(ing_name: ing[:ing_name])
-                        if ingredient.save 
-                        recipe_ingredient = RecipeIngredient.new(recipe_id: recipe.id, ingredient_id: ing.id, amount: ing[:amount])
-                        recipe_ingredient.save
+                    if ingredient.save
+                        recipe_ingredient = RecipeIngredient.new(
+                            recipe_id: recipe.id, 
+                            ingredient_id: ingredient.id, 
+                            amount: ing[:amount] 
+                        )
+                        recipe_ingredient.save 
                     end 
                 end 
-            end
-            recipe.save 
+            end 
             render json: recipe
         else 
-            @recipe.rating = params[:rating]
-            @recipe.save 
-            render json: recipe
+            ### error handle 
         end 
-        # @recipe = Recipe.find(params[:id])
-        # if params[:title] 
-        #     @recipe.title = params[:title]
-        #     @recipe.img = params[:image]
-        #     @recipe.directions = params[:directions]
-        #     @recipe.area = params[:area]
-        #     @recipe.category = params[:category]
-        #     @recipe.rating = params[:rating]
-        #     @recipe_ings = RecipeIngredient.where(recipe_id: @recipe) 
-        #     @recipe_ings.destroy_all
-        #     params[:ingredients].each do |ing|
-        #         if ing[:ingName] != ''
-        #             @ingredient = Ingredient.find_or_create_by(ing_name: ing[:ingName])
-        #                 if @ingredient.save 
-        #                 @recipe_ingredient = RecipeIngredient.new
-        #                 @recipe_ingredient.recipe = @recipe
-        #                 @recipe_ingredient.ingredient = @ingredient
-        #                 @recipe_ingredient.amount = ing[:amount]
-        #                 @recipe_ingredient.save
-        #             end 
-        #         end 
-        #     end
-        #     @recipe.save 
-        #     render json: {recipe: @recipe, ingredients: @recipe.ingredients}
-        # else 
-        #     @recipe.rating = params[:rating]
-        #     @recipe.save 
-        #     render json: {recipe: @recipe, ingredients: @recipe.ingredients}
-        # end 
     end
 
+    def update 
+        recipe = Recipe.find(params[:id]) 
+        recipe.update(recipe_params)
+        recipe_ingredients = RecipeIngredient.where(recipe_id: recipe) 
+        recipe_ingredients.destroy_all
+        params[:ingredients].each do |ing| 
+            if ing[:ing_name] != '' && ing[:ing_name] != nil 
+                ingredient = Ingredient.find_or_create_by(ing_name: ing[:ing_name])
+                    if ingredient.save 
+                    recipe_ingredient = RecipeIngredient.new(recipe_id: recipe.id, ingredient_id: ingredient.id, amount: ing[:amount])
+                    recipe_ingredient.save
+                end 
+            end 
+        end
+        if recipe.save 
+            render json: recipe
+        else 
+            ## error handle 
+        end 
+    end
+
+
     def destroy
-        @recipe = Recipe.find(params[:id])
-        @recipe_ingredients = RecipeIngredient.where(recipe_id: @recipe)
-        @user_recipes = UserRecipe.where(recipe_id: @recipe)
-        @recipe_ingredients.destroy_all
-        @user_recipes.destroy_all
-        @recipe.destroy
+        recipe = Recipe.find(params[:id])
+        recipe.recipe_ingredients.destroy_all
+        recipe.user_recipes.destroy_all
+        recipe.recipe_ingredients.destroy_all
+        recipe.destroy
+        render json: {success: 'Recipe destroyed'}
     end
     
     private 
