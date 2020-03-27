@@ -5,14 +5,9 @@ class UserRecipesController < ApplicationController
         if user_favorite_recipe.save
             render json: user_favorite_recipe
         else 
-            ### error handle 
+            render json: {error: 'Something went wrong'}
         end
     end
-
-    def update_rating
-        byebug 
-        ### add rating column to user_recipes table 
-    end 
 
     def destroy
         user_recipe = UserRecipe.find_by(user_recipe_params)

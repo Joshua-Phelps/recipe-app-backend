@@ -17,45 +17,23 @@ class RecipesController < ApplicationController
       user = User.find(params[:user_id])
       recipe = Recipe.new(recipe_params)
       if recipe.save
-        user_recipe = UserRecipe.new(recipe_id: recipe.id, user_id: user.id)
-        user_recipe.save
-        params[:recipe][:ingredients].each do |ing|            
-          if ing[:ing_name] != '' && ing[:ing_name] != nil 
-            ingredient = Ingredient.find_or_create_by(ing_name: ing[:ing_name])
-            if ingredient.save
-              recipe_ingredient = RecipeIngredient.new(
-                recipe_id: recipe.id, 
-                ingredient_id: ingredient.id, 
-                amount: ing[:amount] 
-              )
-              recipe_ingredient.save 
-            end 
-          end 
-        end 
-        render json: recipe
+        ingredients = params[:recipe][:ingredients] 
+        response = recipe.create_recipe(user, ingredients)
+        render json: response
       else 
-          ### error handle 
+        render json: {error: 'Something went wrong'}
       end 
     end
 
     def update 
       recipe = Recipe.find(params[:id]) 
       recipe.update(recipe_params)
-      recipe_ingredients = RecipeIngredient.where(recipe_id: recipe) 
-      recipe_ingredients.destroy_all
-      params[:ingredients].each do |ing| 
-        if ing[:ing_name] != '' && ing[:ing_name] != nil 
-          ingredient = Ingredient.find_or_create_by(ing_name: ing[:ing_name])
-            if ingredient.save 
-            recipe_ingredient = RecipeIngredient.new(recipe_id: recipe.id, ingredient_id: ingredient.id, amount: ing[:amount])
-            recipe_ingredient.save
-          end 
-        end 
-      end
       if recipe.save 
-        render json: recipe
+        ingredients = params[:ingredients]
+        response = recipe.update_recipe(ingredients)
+        render json: response  
       else 
-        ## error handle 
+        render json: {error: 'Something went wrong'}
       end 
     end
 
@@ -71,7 +49,16 @@ class RecipesController < ApplicationController
     
     private 
     def recipe_params
-      params.require(:recipe).permit(:title, :img, :directions, :area, :category, :rating, :id, ingredients: [])
+      params.require(:recipe).permit(
+        :title, 
+        :img, 
+        :directions, 
+        :area, 
+        :category, 
+        :rating, 
+        :id, 
+        ingredients: []
+      )
     end
 
 end

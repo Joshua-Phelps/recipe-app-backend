@@ -1,9 +1,8 @@
 class UsersController < ApplicationController
 
     def index
-        @users = User.all
-        render :json => @users
-       
+        users = User.all
+        render :json => users   
     end
 
     def show
@@ -16,7 +15,7 @@ class UsersController < ApplicationController
         if user.save
             render json: {success: 'User was successfully created'}
         else
-            ### error handle 
+            render json: {error: 'Something went wrong'}
         end 
     end
 
@@ -25,6 +24,5 @@ class UsersController < ApplicationController
     def user_params
         params.require(:user).permit(:username, :password)
     end 
-
 
 end
