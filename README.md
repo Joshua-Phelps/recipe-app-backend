@@ -11,5 +11,9 @@ To start:
 - run rails db:migrate
 - run rails db:seed
 - run rails s
+- Login with 
+  - username: Admin 
+  - password: Admin 
+  - or create your own user 
 
 Go to https://github.com/Joshua-Phelps/recipe-app-frontend for the frontend 
