@@ -1,24 +1,15 @@
-# README
+Flat Plate is an app designed to organize and store recipes. A user can create, update, delete,  favorite, and rate recipes. A search tool provides filtering by area and category as well as the ability to find recipes by name. 
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Flat Plate uses a Ruby on Rails backend and PostgreSQL database. The front end was built with React.
 
-Things you may want to cover:
+I built this project with two other team members for our mod-4 project at Flatiron School in Seattle
 
-* Ruby version
+To start:
 
-* System dependencies
+- Fork and clone repo
+- Run bundle install
+- run rails db:migrate
+- run rails db:seed
+- run rails s
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+Go to https://github.com/Joshua-Phelps/recipe-app-frontend for the frontend 
