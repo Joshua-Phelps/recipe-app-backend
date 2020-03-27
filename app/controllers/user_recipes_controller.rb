@@ -24,10 +24,9 @@ class UserRecipesController < ApplicationController
     private 
 
     def user_recipe_params
-            params.require(:user_recipe).permit(:id, :user_id, :recipe_id, :favorite, :rating)
+        params.require(:user_recipe).permit(:id, :user_id, :recipe_id, :favorite, :rating)
     end 
 
-    # params.require(:user_recipe).permit(:user_id, :recipe_id, :favorite).with_defaults(favorite: false))
 
 end   
 
